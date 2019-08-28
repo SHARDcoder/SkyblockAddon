@@ -1,7 +1,9 @@
 {
-  "name":"Addon Example",
+  "name":"SkyblockAddon",
   "version":"1.0",
-  "mainClass":"com.example.AddonExample",
-  "desc":"Hyperium Addon Example",
-  "overlay":"com.example.overlay.OverlayExample"
+  "mainClass":"me.shardcoder.skyblockaddon.SkyblockAddon",
+  "desc":"A Hyperium port of Biscuit's SkyblockAddons mod. Ported by SHARDcoder",
+  "mixinConfigs": [
+    "mixins.skyblockaddon.json"
+  ]
 }

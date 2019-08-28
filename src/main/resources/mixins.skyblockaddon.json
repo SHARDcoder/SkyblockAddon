@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "me.shardcoder.skyblockaddon.mixins",
+  "verbose": true,
+  "client": [
+
+  ]
+}
