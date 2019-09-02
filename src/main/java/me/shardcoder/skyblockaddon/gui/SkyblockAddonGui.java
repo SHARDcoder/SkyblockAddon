@@ -1,6 +1,15 @@
 package me.shardcoder.skyblockaddon.gui;
 
+import cc.hyperium.gui.GuiHyperiumScreenIngameMenu;
+import cc.hyperium.gui.GuiIngameMultiplayer;
+import cc.hyperium.mixinsimp.gui.HyperiumGuiIngame;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.gui.buttons.ButtonFeature;
+import me.shardcoder.skyblockaddon.gui.buttons.ButtonSolid;
+import me.shardcoder.skyblockaddon.gui.buttons.ButtonToggle;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
+import me.shardcoder.skyblockaddon.utils.Feature;
+import me.shardcoder.skyblockaddon.utils.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -180,25 +189,26 @@ public class SkyblockAddonGui extends GuiScreen {
                 main.getConfigValues().setLanguage(main.getConfigValues().getLanguage().getNextLanguage());
                 main.getConfigValues().loadLanguageFile();
                 main.getUtils().setFadingIn(false);
-                Minecraft.getMinecraft().displayGuiScreen(new SkyblockAddonsGui(main, page, page));
+                Minecraft.getMinecraft().displayGuiScreen(new SkyblockAddonGui(main, page, page));
             }  else if (feature == Feature.EDIT_LOCATIONS) {
                 main.getUtils().setFadingIn(false);
                 Minecraft.getMinecraft().displayGuiScreen(new LocationEditGui(main));
             } else if (feature == Feature.NEXT_PAGE) {
                 main.getUtils().setFadingIn(false);
-                Minecraft.getMinecraft().displayGuiScreen(new SkyblockAddonsGui(main, page+1, page));
+                Minecraft.getMinecraft().displayGuiScreen(new SkyblockAddonGui(main, page+1, page));
             } else if (feature == Feature.PREVIOUS_PAGE) {
                 main.getUtils().setFadingIn(false);
-                Minecraft.getMinecraft().displayGuiScreen(new SkyblockAddonsGui(main, page-1, page));
+                Minecraft.getMinecraft().displayGuiScreen(new SkyblockAddonGui(main, page-1, page));
             } else {
                 if (main.getConfigValues().isDisabled(feature)) {
                     main.getConfigValues().getDisabledFeatures().remove(feature);
                 } else {
                     main.getConfigValues().getDisabledFeatures().add(feature);
                     if (feature == Feature.HIDE_FOOD_ARMOR_BAR) { // Reset the vanilla bars when disabling these two features.
-                        GuiIngameForge.renderArmor = true; // The food gets automatically enabled, no need to include it.
+                        //need to replace this soonTM
+                        //GuiHyperiumScreenIngameMenu.renderArmor = true; // The food gets automatically enabled, no need to include it.
                     } else if (feature == Feature.HIDE_HEALTH_BAR) {
-                        GuiIngameForge.renderHealth = true;
+                        //GuiIngameForge.renderHealth = true;
                     }
                 }
             }

@@ -5,13 +5,18 @@ import me.shardcoder.skyblockaddon.SkyblockAddon;
 import me.shardcoder.skyblockaddon.gui.buttons.ButtonLocation;
 import me.shardcoder.skyblockaddon.gui.buttons.ButtonSolid;
 import me.shardcoder.skyblockaddon.listeners.PlayerListener;
+import me.shardcoder.skyblockaddon.utils.ConfigColor;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
 import me.shardcoder.skyblockaddon.utils.Feature;
 import me.shardcoder.skyblockaddon.utils.Message;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
+
+import java.awt.*;
 
 import static me.shardcoder.skyblockaddon.gui.SkyblockAddonGui.BUTTON_MAX_WIDTH;
 

@@ -1,9 +1,21 @@
 package me.shardcoder.skyblockaddon.listeners;
 
+import cc.hyperium.Hyperium;
+import cc.hyperium.event.ChatEvent;
+import cc.hyperium.event.EntityRenderEvent;
 import cc.hyperium.event.InvokeEvent;
+import cc.hyperium.event.ItemTooltipEvent;
 import cc.hyperium.event.Priority;
+import cc.hyperium.event.ServerChatEvent;
+import cc.hyperium.event.TickEvent;
 import cc.hyperium.event.WorldChangeEvent;
+import cc.hyperium.event.WorldLoadEvent;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.Attribute;
+import me.shardcoder.skyblockaddon.utils.CoordsPair;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
+import me.shardcoder.skyblockaddon.utils.Feature;
+import me.shardcoder.skyblockaddon.utils.Scheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -32,7 +44,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Pattern;
-import org.apache.commons.lang3.EnumUtils;
 
 public class PlayerListener {
 
@@ -76,24 +87,31 @@ public class PlayerListener {
     /**
      * Keep track of recently loaded chunks for the magma boss timer.
      */
+    //sike. i hope we dont need this too much
+    /*
     @InvokeEvent
-    public void onChunkLoad( e) {
+    public void onChunkLoad(WorldLoadEvent e) {
         if (main.getUtils().isOnSkyblock()) {
-            int x = e.getChunk().xPosition;
+            int x = e.().xPosition;
             int z = e.getChunk().zPosition;
             CoordsPair coords = new CoordsPair(x, z);
             recentlyLoadedChunks.add(coords);
             main.getScheduler().schedule(Scheduler.CommandType.DELETE_RECENT_CHUNK, 20, x, z);
         }
     }
+    */
+
     /**
      * Interprets the action bar to extract mana, health, and defence. Enables/disables mana/health prediction,
      * and looks for mana usage messages in chat while predicting.
      */
     @InvokeEvent(priority = Priority.HIGH)
-    public void onChatReceive(ClientChatReceivedEvent e) {
-        String message = e.message.getUnformattedText();
-        if (e.type == 2) {
+    public void onChatReceive(ServerChatEvent e) {
+        String message = e.getChat().getUnformattedText();
+        //Introduced in 1.8: 0 : Standard Text Message 1 : 'System' message, displayed as standard text. 2 : 'Status' message, displayed above action bar, where song notifications are.
+        //ty forge api
+
+        if (e.getType() == 2) {
             if (message.endsWith("\u270E Mana\u00A7r")) {
                 try {
                     String returnMessage;
@@ -154,9 +172,10 @@ public class PlayerListener {
                         returnMessage = newMessage.toString();
                     }
                     if (main.isUsingOofModv1() && returnMessage.trim().length() == 0) {
-                        e.setCanceled(true);
+                        e.setCancelled(true);
                     }
-                    e.message = new ChatComponentText(returnMessage);
+                    e.setCancelled(true);// = new ChatComponentText(returnMessage);
+                    Hyperium.INSTANCE.getHandlers().getGeneralChatHandler().sendMessage(returnMessage, false);
                     return;
                 } catch (Exception ex) {
                     main.getRenderListener().setPredictMana(true);
@@ -174,7 +193,7 @@ public class PlayerListener {
             /*  Resets all user input on dead as to not walk backwards or stafe into the portal
                 Might get trigger upon encountering a non named "You" though this chance is so
                 minimal it can be discarded as a bug. */
-            if (main.getConfigValues().isEnabled(Feature.PREVENT_MOVEMENT_ON_DEATH) && e.message.getFormattedText().startsWith("§r§c ☠ §r§7You ")) {
+            if (main.getConfigValues().isEnabled(Feature.PREVENT_MOVEMENT_ON_DEATH) && e.getChat().getFormattedText().startsWith("§r§c ☠ §r§7You ")) {
                 KeyBinding.unPressAllKeys();
             }
         }
@@ -196,14 +215,16 @@ public class PlayerListener {
      * This blocks interaction with Ember Rods on your island, to avoid blowing up chests, and placing enchanted items
      * such as enchanted lava buckets.
      */
-    @SubscribeEvent()
+    //TODO MAYBE
+    /*
+    @InvokeEvent
     public void onInteract(PlayerInteractEvent e) {
         Minecraft mc = Minecraft.getMinecraft();
         ItemStack heldItem = e.entityPlayer.getHeldItem();
         if (e.entityPlayer == mc.thePlayer && heldItem != null && heldItem.isItemEnchanted()) {
             if (main.getConfigValues().isEnabled(Feature.DISABLE_EMBER_ROD)) {
                 if (heldItem.getItem().equals(Items.blaze_rod) && main.getUtils().getLocation() == EnumUtils.Location.ISLAND) {
-                    e.setCanceled(true);
+                    e.setCancelled(true);
                     return;
                 }
             }
@@ -214,14 +235,14 @@ public class PlayerListener {
                 }
             }
         }
-    }
+    }*/
 
     /**
      * The main timer for a bunch of stuff.
      */
-    @SubscribeEvent()
-    public void onTick(TickEvent.ClientTickEvent e) {
-        if (e.phase == TickEvent.Phase.START) {
+    @InvokeEvent
+    public void onTick(TickEvent e) {
+        //if (e.phase == TickEvent.Phase.START) {
             timerTick++;
             Minecraft mc = Minecraft.getMinecraft();
             if (mc != null) { // Predict health every tick if needed.
@@ -253,7 +274,8 @@ public class PlayerListener {
                         main.getInventoryUtils().checkIfInventoryIsFull(mc, p);
                         main.getInventoryUtils().checkIfWearingSkeletonHelmet(p);
                         if (!sentUpdate) {
-                            main.getUtils().checkUpdates();
+                            //TODO
+                            //main.getUtils().checkUpdates();
                             sentUpdate = true;
                         }
 
@@ -269,14 +291,15 @@ public class PlayerListener {
                     timerTick = 1;
                 }
             }
-        }
+        //}
     }
 
     /**
      * Checks for minion holograms.
      * Original contribution by Michael#3549.
      */
-    @SubscribeEvent
+    /*
+    @InvokeEvent
     public void onEntityEvent(LivingEvent.LivingUpdateEvent e) {
         Entity entity = e.entity;
         if (main.getUtils().isOnSkyblock() && entity instanceof EntityArmorStand && entity.hasCustomName()) {
@@ -324,7 +347,7 @@ public class PlayerListener {
 //                }
 //            }
         }
-    }
+    }*/
 
     // Doesn't work at the moment, using line 378 instead.
 //    @SubscribeEvent
@@ -345,82 +368,83 @@ public class PlayerListener {
     /**
      * The main timer for the magma boss checker.
      */
-    @SubscribeEvent()
-    public void onClientTickMagma(TickEvent.ClientTickEvent e) {
-        if (e.phase == TickEvent.Phase.START) {
-            Minecraft mc = Minecraft.getMinecraft();
-            if (main.getConfigValues().isEnabled(Feature.MAGMA_WARNING) && main.getUtils().isOnSkyblock()) {
-                if (mc != null && mc.theWorld != null) {
-                    if (magmaTick % 5 == 0) {
-                        boolean foundBoss = false;
-                        long currentTime = System.currentTimeMillis();
-                        for (Entity entity : mc.theWorld.loadedEntityList) { // Loop through all the entities.
-                            if (entity instanceof EntityMagmaCube) {
-                                EntitySlime magma = (EntitySlime) entity;
-                                if (magma.getSlimeSize() > 10) { // Find a big magma boss
-                                    foundBoss = true;
-                                    if ((lastBoss == -1 || System.currentTimeMillis() - lastBoss > 1800000)) {
-                                        lastBoss = System.currentTimeMillis();
-                                        main.getRenderListener().setTitleFeature(Feature.MAGMA_WARNING); // Enable warning and disable again in four seconds.
-                                        magmaTick = 16; // so the sound plays instantly
-                                        new Timer().schedule(new TimerTask() {
-                                            @Override
-                                            public void run() {
-                                                main.getRenderListener().setTitleFeature(null);
-                                            }
-                                        }, main.getConfigValues().getWarningSeconds() * 1000); // 4 second warning.
+    @InvokeEvent
+    public void onClientTickMagma(TickEvent e) {
+        //careful with this. might break
+        Minecraft mc = Minecraft.getMinecraft();
+        if (main.getConfigValues().isEnabled(Feature.MAGMA_WARNING) && main.getUtils().isOnSkyblock()) {
+            if (mc != null && mc.theWorld != null) {
+                if (magmaTick % 5 == 0) {
+                    boolean foundBoss = false;
+                    long currentTime = System.currentTimeMillis();
+                    for (Entity entity : mc.theWorld.loadedEntityList) { // Loop through all the entities.
+                        if (entity instanceof EntityMagmaCube) {
+                            EntitySlime magma = (EntitySlime) entity;
+                            if (magma.getSlimeSize() > 10) { // Find a big magma boss
+                                foundBoss = true;
+                                if ((lastBoss == -1 || System.currentTimeMillis() - lastBoss > 1800000)) {
+                                    lastBoss = System.currentTimeMillis();
+                                    main.getRenderListener().setTitleFeature(Feature.MAGMA_WARNING); // Enable warning and disable again in four seconds.
+                                    magmaTick = 16; // so the sound plays instantly
+                                    new Timer().schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            main.getRenderListener().setTitleFeature(null);
+                                        }
+                                    }, main.getConfigValues().getWarningSeconds() * 1000); // 4 second warning.
 //                                logServer(mc);
-                                    }
-                                    magmaAccuracy = EnumUtils.MagmaTimerAccuracy.SPAWNED;
-                                    if (currentTime- lastBossSpawnPost > 300000) {
-                                        lastBossSpawnPost = currentTime;
-                                        main.getUtils().sendPostRequest(EnumUtils.MagmaEvent.BOSS_SPAWN);
-                                    }
+                                }
+                                magmaAccuracy = EnumUtils.MagmaTimerAccuracy.SPAWNED;
+                                if (currentTime- lastBossSpawnPost > 300000) {
+                                    lastBossSpawnPost = currentTime;
+                                    main.getUtils().sendPostRequest(EnumUtils.MagmaEvent.BOSS_SPAWN);
                                 }
                             }
                         }
-                        if (!foundBoss && magmaAccuracy == EnumUtils.MagmaTimerAccuracy.SPAWNED) {
-                            magmaAccuracy = EnumUtils.MagmaTimerAccuracy.ABOUT;
-                            setMagmaTime(7200, true);
-                            if (currentTime- lastBossDeathPost > 300000) {
-                                lastBossDeathPost = currentTime;
-                                main.getUtils().sendPostRequest(EnumUtils.MagmaEvent.BOSS_DEATH);
-                            }
+                    }
+                    if (!foundBoss && magmaAccuracy == EnumUtils.MagmaTimerAccuracy.SPAWNED) {
+                        magmaAccuracy = EnumUtils.MagmaTimerAccuracy.ABOUT;
+                        setMagmaTime(7200, true);
+                        if (currentTime- lastBossDeathPost > 300000) {
+                            lastBossDeathPost = currentTime;
+                            main.getUtils().sendPostRequest(
+                                EnumUtils.MagmaEvent.BOSS_DEATH);
                         }
                     }
-                    if (main.getRenderListener().getTitleFeature() == Feature.MAGMA_WARNING && magmaTick % 4 == 0) { // Play sound every 4 ticks or 1/5 second.
-                        main.getUtils().playSound("random.orb", 0.5);
-                    }
                 }
-            }
-            magmaTick++;
-            if (magmaTick > 20) {
-                if ((magmaAccuracy == EnumUtils.MagmaTimerAccuracy.EXACTLY || magmaAccuracy == EnumUtils.MagmaTimerAccuracy.ABOUT)
-                    && magmaTime == 0) {
-                    magmaAccuracy = EnumUtils.MagmaTimerAccuracy.SPAWNED_PREDICTION;
-                    main.getScheduler().schedule(Scheduler.CommandType.RESET_MAGMA_PREDICTION, 20);
+                if (main.getRenderListener().getTitleFeature() == Feature.MAGMA_WARNING && magmaTick % 4 == 0) { // Play sound every 4 ticks or 1/5 second.
+                    main.getUtils().playSound("random.orb", 0.5);
                 }
-                magmaTime--;
-                magmaTick = 1;
             }
         }
+        magmaTick++;
+        if (magmaTick > 20) {
+            if ((magmaAccuracy == EnumUtils.MagmaTimerAccuracy.EXACTLY || magmaAccuracy == EnumUtils.MagmaTimerAccuracy.ABOUT)
+                && magmaTime == 0) {
+                magmaAccuracy = EnumUtils.MagmaTimerAccuracy.SPAWNED_PREDICTION;
+                main.getScheduler().schedule(Scheduler.CommandType.RESET_MAGMA_PREDICTION, 20);
+            }
+            magmaTime--;
+            magmaTick = 1;
+        }
+
     }
 
     private long lastMagmaWavePost = -1;
     private long lastBlazeWavePost = -1;
 
-    @SubscribeEvent()
-    public void onTickMagmaBossChecker(EntityEvent.EnteringChunk e) { // EntityJoinWorldEvent
+    @InvokeEvent
+    public void onTickMagmaBossChecker(EntityRenderEvent e) { // EntityJoinWorldEvent
 
         // Between these two coordinates is the whole "arena" area where all the magmas and stuff are.
         AxisAlignedBB spawnArea = new AxisAlignedBB(-244, 0, -566, -379, 255, -635);
 
         if (main.getUtils().getLocation() == EnumUtils.Location.BLAZING_FORTRESS) {
-            Entity entity =  e.entity;
+            Entity entity =  e.getEntityIn();
             if (spawnArea.isVecInside(new Vec3(entity.posX, entity.posY, entity.posZ))) { // timers will trigger if 15 magmas/8 blazes spawn in the box within a 4 second time period
                 long currentTime = System.currentTimeMillis();
-                if (e.entity instanceof EntityMagmaCube) {
-                    if (!recentlyLoadedChunks.contains(new CoordsPair(e.newChunkX, e.newChunkZ)) && entity.ticksExisted == 0) {
+                if (e.getEntityIn() instanceof EntityMagmaCube) {
+                    if (!recentlyLoadedChunks.contains(new CoordsPair(Float.floatToIntBits(e.getPosX() / 16), Float.floatToIntBits(e.getPosZ() / 16))) && entity.ticksExisted == 0) {
                         recentMagmaCubes++;
                         main.getScheduler().schedule(Scheduler.CommandType.SUBTRACT_MAGMA_COUNT, 4);
                         if (recentMagmaCubes >= 17) {
@@ -428,12 +452,13 @@ public class PlayerListener {
                             magmaAccuracy = EnumUtils.MagmaTimerAccuracy.EXACTLY;
                             if (currentTime- lastMagmaWavePost > 300000) {
                                 lastMagmaWavePost = currentTime;
-                                main.getUtils().sendPostRequest(EnumUtils.MagmaEvent.MAGMA_WAVE);
+                                main.getUtils().sendPostRequest(
+                                    EnumUtils.MagmaEvent.MAGMA_WAVE);
                             }
                         }
                     }
-                } else if (e.entity instanceof EntityBlaze) {
-                    if (!recentlyLoadedChunks.contains(new CoordsPair(e.newChunkX, e.newChunkZ)) && entity.ticksExisted == 0) {
+                } else if (e.getEntityIn() instanceof EntityBlaze) {
+                    if (!recentlyLoadedChunks.contains(new CoordsPair(Float.floatToIntBits(e.getPosX() / 16), Float.floatToIntBits(e.getPosZ() / 16))) && entity.ticksExisted == 0) {
                         recentBlazes++;
                         main.getScheduler().schedule(Scheduler.CommandType.SUBTRACT_BLAZE_COUNT, 4);
                         if (recentBlazes >= 10) {
@@ -441,7 +466,8 @@ public class PlayerListener {
                             magmaAccuracy = EnumUtils.MagmaTimerAccuracy.EXACTLY;
                             if (currentTime- lastBlazeWavePost > 300000) {
                                 lastBlazeWavePost = currentTime;
-                                main.getUtils().sendPostRequest(EnumUtils.MagmaEvent.BLAZE_WAVE);
+                                main.getUtils().sendPostRequest(
+                                    EnumUtils.MagmaEvent.BLAZE_WAVE);
                             }
                         }
                     }
@@ -453,9 +479,9 @@ public class PlayerListener {
     /**
      * This is simply to help players copy item nbt (for creating texture packs/other stuff).
      */
-    @SubscribeEvent()
+    @InvokeEvent
     public void onItemTooltip(ItemTooltipEvent e) {
-        ItemStack hoveredItem = e.itemStack;
+        ItemStack hoveredItem = e.getItem();
 
         if (main.getConfigValues().isEnabled(Feature.SHOW_ITEM_ANVIL_USES)) {
             // Anvil Uses ~ original done by Dahn#6036
@@ -463,10 +489,10 @@ public class PlayerListener {
                 NBTTagCompound nbt = hoveredItem.getTagCompound();
                 if (nbt.hasKey("ExtraAttributes")) {
                     if (nbt.getCompoundTag("ExtraAttributes").hasKey("anvil_uses")) {
-                        int insertAt = e.toolTip.size();
+                        int insertAt = e.getToolTip().size();
                         if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips) {
                             insertAt -= 3; // 1 line for the item name, 1 line for the nbt, and 1 line for the rarity
-                            if (e.itemStack.isItemDamaged()) {
+                            if (e.getItem().isItemDamaged()) {
                                 insertAt--; // 1 line for damage
                             }
                         }
@@ -476,7 +502,7 @@ public class PlayerListener {
                             anvilUses -= hotPotatoCount;
                         }
                         if (anvilUses > 0) {
-                            e.toolTip.add(insertAt, "Anvil Uses: " + EnumChatFormatting.RED.toString() + anvilUses);
+                            e.getToolTip().add(insertAt, "Anvil Uses: " + EnumChatFormatting.RED.toString() + anvilUses);
                         }
                     }
                 }

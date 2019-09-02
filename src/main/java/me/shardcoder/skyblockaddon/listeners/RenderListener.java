@@ -1,9 +1,22 @@
 package me.shardcoder.skyblockaddon.listeners;
 
 import cc.hyperium.event.InvokeEvent;
+import cc.hyperium.event.RenderGuiEvent;
+import cc.hyperium.event.TickEvent;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.gui.LocationEditGui;
+import me.shardcoder.skyblockaddon.gui.SkyblockAddonGui;
+import me.shardcoder.skyblockaddon.gui.buttons.ButtonLocation;
+import me.shardcoder.skyblockaddon.gui.buttons.ButtonSlider;
+import me.shardcoder.skyblockaddon.utils.Attribute;
+import me.shardcoder.skyblockaddon.utils.ConfigColor;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
+import me.shardcoder.skyblockaddon.utils.Feature;
+import me.shardcoder.skyblockaddon.utils.ItemDiff;
+import me.shardcoder.skyblockaddon.utils.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -43,10 +56,12 @@ public class RenderListener {
     /**
      * Render overlays and warnings for clients without labymod.
      */
+    //TODO -- GuiIngame again
+    /*
     @InvokeEvent
-    public void onRenderRegular(RenderGameOverlayEvent.Post e) {
-        if ((!main.isUsingLabymod() || Minecraft.getMinecraft().ingameGUI instanceof GuiIngameForge)) {
-            if (e.type == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
+    public void onRenderRegular(RenderGuiEvent e) {
+        if ((!main.isUsingLabymod() || Minecraft.getMinecraft().ingameGUI instanceof GuiIngame)) {
+            if (e.type == RenderGuiEvent) {
                 if (main.getUtils().isOnSkyblock()) {
                     renderOverlays();
                     renderWarnings(e.resolution);
@@ -62,6 +77,7 @@ public class RenderListener {
      * Labymod creates its own ingame gui and replaces the forge one, and changes the events that are called.
      * This is why the above method can't work for both.
      */
+    /*
     @InvokeEvent
     public void onRenderLabyMod(RenderGameOverlayEvent e) {
         if (e.type == null && main.isUsingLabymod()) {
@@ -72,14 +88,17 @@ public class RenderListener {
                 renderTimersOnly();
             }
         }
-    }
+    }*/
 
     /**
      * I have an option so you can see the magma timer in other games so that's why.
      */
     private void renderTimersOnly() {
         Minecraft mc = Minecraft.getMinecraft();
-        if (!(mc.currentScreen instanceof LocationEditGui) && !(mc.currentScreen instanceof GuiNotification)) {
+        //dont need
+        // && !(mc.currentScreen instanceof GuiNotification)
+        //because not forge
+        if (!(mc.currentScreen instanceof LocationEditGui)) {
             float scale = main.getUtils().denormalizeValue(main.getConfigValues().getGuiScale(), ButtonSlider.GUI_SCALE_MINIMUM, ButtonSlider.GUI_SCALE_MAXIMUM, ButtonSlider.GUI_SCALE_STEP);
             GlStateManager.disableBlend();
             GlStateManager.pushMatrix();
@@ -161,7 +180,10 @@ public class RenderListener {
      */
     private void renderOverlays() {
         Minecraft mc = Minecraft.getMinecraft();
-        if (!(mc.currentScreen instanceof LocationEditGui) && !(mc.currentScreen instanceof GuiNotification)) {
+        //dont need
+        // && !(mc.currentScreen instanceof GuiNotification)
+        //because not forge
+        if (!(mc.currentScreen instanceof LocationEditGui)) {
             float scale = main.getUtils().denormalizeValue(main.getConfigValues().getGuiScale(), ButtonSlider.GUI_SCALE_MINIMUM, ButtonSlider.GUI_SCALE_MAXIMUM, ButtonSlider.GUI_SCALE_STEP);
             GlStateManager.disableBlend();
             GlStateManager.pushMatrix();
@@ -510,8 +532,9 @@ public class RenderListener {
         return main.getUtils().getAttributes().get(attribute).getValue();
     }
 
+    /* TODO GUiingame
     @InvokeEvent
-    public void onRenderRemoveBars(RenderGameOverlayEvent.Pre e) {
+    public void onRenderRemoveBars(RenderGuiEvent.Pre e) {
         if (e.type == RenderGameOverlayEvent.ElementType.ALL) {
             if (main.getUtils().isOnSkyblock()) {
                 if (main.getConfigValues().isEnabled(Feature.HIDE_FOOD_ARMOR_BAR)) {
@@ -530,11 +553,11 @@ public class RenderListener {
                 }
             }
         }
-    }
+    }*/
     @InvokeEvent
-    public void onRender(TickEvent.RenderTickEvent e) {
+    public void onRender(TickEvent e) {
         if (guiToOpen == PlayerListener.GUIType.MAIN) {
-            Minecraft.getMinecraft().displayGuiScreen(new SkyblockAddonsGui(main, 1, 1));
+            Minecraft.getMinecraft().displayGuiScreen(new SkyblockAddonGui(main, 1, 1));
         } else if (guiToOpen == PlayerListener.GUIType.EDIT_LOCATIONS) {
             Minecraft.getMinecraft().displayGuiScreen(new LocationEditGui(main));
         }

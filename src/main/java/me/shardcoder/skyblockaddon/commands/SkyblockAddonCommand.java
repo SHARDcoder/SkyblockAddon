@@ -50,7 +50,7 @@ public class SkyblockAddonCommand implements BaseCommand {
         main.getUtils().setFadingIn(true);
         main.getRenderListener().setGuiToOpen(PlayerListener.GUIType.MAIN);
     }
-    }
+
 
     @Override
     public List<String> onTabComplete(String[] args) {

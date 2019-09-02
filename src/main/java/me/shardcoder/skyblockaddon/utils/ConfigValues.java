@@ -1,9 +1,26 @@
 package me.shardcoder.skyblockaddon.utils;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import com.google.gson.*;
+
+import java.awt.geom.Point2D;
+import java.io.*;
 
 public class ConfigValues {
 
@@ -30,7 +47,7 @@ public class ConfigValues {
     //    private long nextMagmaTimestamp = -1;
     private Set<Feature> remoteDisabledFeatures = EnumSet.noneOf(Feature.class);
 
-    public ConfigValues(SkyblockAddons main, File settingsConfigFile) {
+    public ConfigValues(SkyblockAddon main, File settingsConfigFile) {
         this.main = main;
         this.settingsConfigFile = settingsConfigFile;
     }

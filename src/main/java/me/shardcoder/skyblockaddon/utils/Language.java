@@ -1,13 +1,15 @@
 package me.shardcoder.skyblockaddon.utils;
 
 public enum Language {
-
+    ENGLISH("en_uk");
+    //TODO
+    /*
     ARABIC("ar_sa"),
     CHINESE_TRADITIONAL("zh_tw"),
     CHINESE_SIMPLIFIED("zh_cn"),
     CZECH("cs_cz"),
     DUTCH_NETHERLANDS("nl_nl"),
-    ENGLISH("en_us"),
+
     FILIPINO("fil_ph"),
     FINNISH("fi_fi"),
     FRENCH("fr_fr"),
@@ -26,6 +28,7 @@ public enum Language {
     SWEDISH("sv_se"),
     THAI("th_th"),
     VIETNAMESE("vi_vn");
+    */
 
     private String path;
 

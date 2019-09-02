@@ -1,6 +1,8 @@
 package me.shardcoder.skyblockaddon.mixins;
 
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.ConfigColor;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
 import me.shardcoder.skyblockaddon.utils.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
@@ -129,7 +131,7 @@ public abstract class MixinGuiChest extends GuiContainer {
         if (main.getUtils().getEnchantmentMatch().size() > 0) {
             if (slotIn != null && !slotIn.inventory.equals(mc.thePlayer.inventory) && slotIn.getHasStack()) {
                 Container slots = inventorySlots;
-                if (slotIn.getSlotIndex() == 13 && inventoryType == EnumUtils.InventoryType.ENCHANTMENT_TABLE) {
+                if (slotIn.slotNumber == 13 && inventoryType == EnumUtils.InventoryType.ENCHANTMENT_TABLE) {
                     ItemStack[] enchantBottles = {slots.getSlot(29).getStack(), slots.getSlot(31).getStack(), slots.getSlot(33).getStack()};
                     for (ItemStack bottle : enchantBottles) {
                         if (bottle != null && bottle.hasDisplayName()) {
@@ -149,7 +151,7 @@ public abstract class MixinGuiChest extends GuiContainer {
                             }
                         }
                     }
-                } else if (slotIn.getSlotIndex() == 22 && inventoryType == EnumUtils.InventoryType.REFORGE_ANVIL) {
+                } else if (slotIn.slotNumber == 22 && inventoryType == EnumUtils.InventoryType.REFORGE_ANVIL) {
                     Slot itemSlot = slots.getSlot(13);
                     if (itemSlot != null && itemSlot.getHasStack()) {
                         ItemStack item = itemSlot.getStack();

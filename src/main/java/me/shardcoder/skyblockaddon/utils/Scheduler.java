@@ -1,9 +1,12 @@
 package me.shardcoder.skyblockaddon.utils;
 
-import java.util.HashMap;
-import java.util.Map;
+import cc.hyperium.event.InvokeEvent;
+import cc.hyperium.event.TickEvent;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.listeners.PlayerListener;
 import org.apache.commons.lang3.mutable.MutableInt;
+
+import java.util.*;
 
 public class Scheduler {
 
@@ -11,7 +14,7 @@ public class Scheduler {
     private long totalTicks = 0;
     private Map<Long, Set<Command>> queue = new TreeMap<>();
 
-    public Scheduler(SkyblockAddons main) {
+    public Scheduler(SkyblockAddon main) {
         this.main = main;
     }
 
@@ -44,9 +47,9 @@ public class Scheduler {
         queue.put(ticks, commandSet);
     }
 
-    @SubscribeEvent()
-    public void ticker(TickEvent.ClientTickEvent e) {
-        if (e.phase == TickEvent.Phase.START) {
+    @InvokeEvent
+    public void ticker(TickEvent e) {
+        //if (e.phase == TickEvent.Phase.START) {
             totalTicks++;
             Set<Command> commands = queue.get(totalTicks);
             if (commands != null) {
@@ -62,7 +65,7 @@ public class Scheduler {
                     main.getUtils().fetchEstimateFromServer();
                 }
             }
-        }
+        //}
     }
 
     private class Command {
@@ -104,7 +107,7 @@ public class Scheduler {
         DELETE_RECENT_CHUNK;
 
         public void execute(Command command, int count) {
-            PlayerListener playerListener = SkyblockAddons.getInstance().getPlayerListener();
+            PlayerListener playerListener = SkyblockAddon.getInstance().getPlayerListener();
             if (this == SUBTRACT_MAGMA_COUNT) {
                 playerListener.setRecentMagmaCubes(playerListener.getRecentMagmaCubes()-1);
             } else if (this == SUBTRACT_BLAZE_COUNT) {

@@ -1,10 +1,47 @@
 package me.shardcoder.skyblockaddon.utils;
 
+import cc.hyperium.Hyperium;
+import cc.hyperium.event.ChatEvent;
+import cc.hyperium.event.EventBus;
+import cc.hyperium.gui.main.HyperiumOverlay;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import me.shardcoder.skyblockaddon.SkyblockAddon;
+import net.minecraft.client.Minecraft;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MathHelper;
+import org.apache.commons.lang3.mutable.MutableInt;
+
+import java.awt.*;
+
 public class Utils {
 
     private final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + '\u00A7' + "[0-9A-FK-OR]");
 
-    private Map<Attribute, MutableInt> attributes = new EnumMap<>(Attribute.class);
+    private Map<Attribute, MutableInt> attributes = new EnumMap<Attribute, MutableInt>(Attribute.class);
     private List<String> enchantmentMatch = new LinkedList<>();
     private List<String> enchantmentExclusion = new LinkedList<>();
     private BackpackInfo backpackToRender = null;
@@ -17,9 +54,9 @@ public class Utils {
 
     private boolean fadingIn;
 
-    private SkyblockAddons main;
+    private SkyblockAddon main;
 
-    public Utils(SkyblockAddons main) {
+    public Utils(SkyblockAddon main) {
         this.main = main;
         addDefaultStats();
     }
@@ -31,18 +68,19 @@ public class Utils {
     }
 
     public void sendMessage(String text) {
-        ClientChatReceivedEvent event = new ClientChatReceivedEvent((byte) 1, new ChatComponentText(text));
-        MinecraftForge.EVENT_BUS.post(event); // Let other mods pick up the new message
-        if (!event.isCanceled()) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(event.message); // Just for logs
+        ChatEvent event = new ChatEvent(new ChatComponentText(text));
+        EventBus.INSTANCE.post(event); // Let other mods pick up the new message
+
+        if (!event.isCancelled()) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(event.getChat()); // Just for logs
         }
     }
 
     private void sendMessage(ChatComponentText text) {
-        ClientChatReceivedEvent event = new ClientChatReceivedEvent((byte) 1, text);
-        MinecraftForge.EVENT_BUS.post(event); // Let other mods pick up the new message
-        if (!event.isCanceled()) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(event.message); // Just for logs
+        ChatEvent event = new ChatEvent(text);
+        EventBus.INSTANCE.post(event); // Let other mods pick up the new message
+        if (!event.isCancelled()) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(event.getChat()); // Just for logs
         }
     }
 
@@ -57,7 +95,8 @@ public class Utils {
             if (sidebarObjective != null) {
                 onSkyblock = stripColor(sidebarObjective.getDisplayName()).startsWith("SKYBLOCK");
                 Collection<Score> collection = scoreboard.getSortedScores(sidebarObjective);
-                List<Score> list = Lists.newArrayList(collection.stream().filter(p_apply_1_ -> p_apply_1_.getPlayerName() != null && !p_apply_1_.getPlayerName().startsWith("#")).collect(Collectors.toList()));
+                List<Score> list = List.newArrayList(collection.stream().filter(p_apply_1_ -> p_apply_1_.getPlayerName() != null && !p_apply_1_.getPlayerName().startsWith("#")).collect(
+                    Collections.toList()));
                 if (list.size() > 15) {
                     collection = Lists.newArrayList(Iterables.skip(list, collection.size() - 15));
                 } else {
@@ -122,7 +161,8 @@ public class Utils {
     }
 
     public float normalizeValue(float value, float valueMin, float valueMax, float valueStep) {
-        return MathHelper.clamp_float((this.snapToStepClamp(value, valueMin, valueMax, valueStep) - valueMin) / (valueMax - valueMin), 0.0F, 1.0F);
+        return MathHelper
+            .clamp_float((this.snapToStepClamp(value, valueMin, valueMax, valueStep) - valueMin) / (valueMax - valueMin), 0.0F, 1.0F);
     }
 
     public float denormalizeValue(float value, float valueMin, float valueMax, float valueStep) {
@@ -162,96 +202,98 @@ public class Utils {
         return text.replaceAll("\\s+", " ");
     }
 
-    public void checkUpdates() {
-        new Thread(() -> {
-            try {
-                URL url = new URL("https://raw.githubusercontent.com/biscuut/SkyblockAddons/master/build.gradle");
-                URLConnection connection = url.openConnection();
-                connection.setReadTimeout(5000);
-                connection.addRequestProperty("User-Agent", "SkyblockAddons update checker");
-                connection.setDoOutput(true);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String currentLine;
-                String newestVersion = "";
-                while ((currentLine = reader.readLine()) != null) {
-                    if (currentLine.contains("version = \"")) {
-                        String[] newestVersionSplit = currentLine.split(Pattern.quote("version = \""));
-                        newestVersionSplit = newestVersionSplit[1].split(Pattern.quote("\""));
-                        newestVersion = newestVersionSplit[0];
-                        break;
-                    }
-                }
-                reader.close();
-                List<Integer> newestVersionNumbers = new ArrayList<>();
-                List<Integer> thisVersionNumbers = new ArrayList<>();
+    //needs changing to this repo
+    //also use addons list in hyperium
+    /*    public void checkUpdates() {
+            new Thread(() -> {
                 try {
-                    for (String s : newestVersion.split(Pattern.quote("."))) {
-                        if (s.contains("-b")) {
-                            String[] splitBuild = s.split(Pattern.quote("-b"));
-                            newestVersionNumbers.add(Integer.parseInt(splitBuild[0]));
-                            newestVersionNumbers.add(Integer.parseInt(splitBuild[1]));
-                        } else {
-                            newestVersionNumbers.add(Integer.parseInt(s));
+                    URL url = new URL("https://raw.githubusercontent.com/biscuut/SkyblockAddons/master/build.gradle");
+                    URLConnection connection = url.openConnection();
+                    connection.setReadTimeout(5000);
+                    connection.addRequestProperty("User-Agent", "SkyblockAddons update checker");
+                    connection.setDoOutput(true);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String currentLine;
+                    String newestVersion = "";
+                    while ((currentLine = reader.readLine()) != null) {
+                        if (currentLine.contains("version = \"")) {
+                            String[] newestVersionSplit = currentLine.split(Pattern.quote("version = \""));
+                            newestVersionSplit = newestVersionSplit[1].split(Pattern.quote("\""));
+                            newestVersion = newestVersionSplit[0];
+                            break;
                         }
                     }
-                    for (String s : SkyblockAddons.VERSION.split(Pattern.quote("."))) {
-                        if (s.contains("-b")) {
-                            String[] splitBuild = s.split(Pattern.quote("-b"));
-                            thisVersionNumbers.add(Integer.parseInt(splitBuild[0]));
-                            thisVersionNumbers.add(Integer.parseInt(splitBuild[1]));
-                        } else {
-                            thisVersionNumbers.add(Integer.parseInt(s));
+                    reader.close();
+                    List<Integer> newestVersionNumbers = new ArrayList<>();
+                    List<Integer> thisVersionNumbers = new ArrayList<>();
+                    try {
+                        for (String s : newestVersion.split(Pattern.quote("."))) {
+                            if (s.contains("-b")) {
+                                String[] splitBuild = s.split(Pattern.quote("-b"));
+                                newestVersionNumbers.add(Integer.parseInt(splitBuild[0]));
+                                newestVersionNumbers.add(Integer.parseInt(splitBuild[1]));
+                            } else {
+                                newestVersionNumbers.add(Integer.parseInt(s));
+                            }
+                        }
+                        for (String s : SkyblockAddons.VERSION.split(Pattern.quote("."))) {
+                            if (s.contains("-b")) {
+                                String[] splitBuild = s.split(Pattern.quote("-b"));
+                                thisVersionNumbers.add(Integer.parseInt(splitBuild[0]));
+                                thisVersionNumbers.add(Integer.parseInt(splitBuild[1]));
+                            } else {
+                                thisVersionNumbers.add(Integer.parseInt(s));
+                            }
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return;
+                    }
+                    for (int i = 0; i < 4; i++) {
+                        if (i >= newestVersionNumbers.size()) {
+                            newestVersionNumbers.add(i, 0);
+                        }
+                        if (i >= thisVersionNumbers.size()) {
+                            thisVersionNumbers.add(i, 0);
+                        }
+                        if (newestVersionNumbers.get(i) > thisVersionNumbers.get(i)) {
+                            String link = "https://hypixel.net/threads/forge-1-8-9-skyblockaddons-useful-features-for-skyblock.2109217/";
+                            try {
+                                url = new URL("https://raw.githubusercontent.com/biscuut/SkyblockAddons/master/updatelink.txt");
+                                connection = url.openConnection();
+                                connection.setReadTimeout(5000);
+                                connection.addRequestProperty("User-Agent", "SkyblockAddons");
+                                connection.setDoOutput(true);
+                                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                                while ((currentLine = reader.readLine()) != null) {
+                                    link = currentLine;
+                                }
+                                reader.close();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            } finally {
+                                sendMessage(EnumChatFormatting.GRAY.toString() + EnumChatFormatting.STRIKETHROUGH + "--------------" + EnumChatFormatting.GRAY + "[" + EnumChatFormatting.BLUE + EnumChatFormatting.BOLD + " SkyblockAddons " + EnumChatFormatting.GRAY + "]" + EnumChatFormatting.GRAY + EnumChatFormatting.STRIKETHROUGH + "--------------");
+                                ChatComponentText newVersion = new ChatComponentText(EnumChatFormatting.YELLOW+Message.MESSAGE_NEW_VERSION.getMessage(newestVersion)+"\n");
+                                newVersion.setChatStyle(newVersion.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link)));
+                                sendMessage(newVersion);
+                                ChatComponentText discord = new ChatComponentText(EnumChatFormatting.YELLOW+Message.MESSAGE_DISCORD.getMessage());
+                                discord.setChatStyle(discord.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/PqTAEek")));
+                                sendMessage(discord);
+                                sendMessage(EnumChatFormatting.GRAY.toString() + EnumChatFormatting.STRIKETHROUGH + "---------------------------------------");
+                            }
+                            break;
+                        } else if (thisVersionNumbers.get(i) > newestVersionNumbers.get(i)) {
+                            sendMessage(EnumChatFormatting.GRAY.toString() + EnumChatFormatting.STRIKETHROUGH + "--------------" + EnumChatFormatting.GRAY + "[" + EnumChatFormatting.BLUE + EnumChatFormatting.BOLD + " SkyblockAddons " + EnumChatFormatting.GRAY + "]" + EnumChatFormatting.GRAY + EnumChatFormatting.STRIKETHROUGH + "--------------");
+                            sendMessage(EnumChatFormatting.YELLOW + Message.MESSAGE_DEVELOPMENT_VERSION.getMessage(SkyblockAddons.VERSION, newestVersion));
+                            sendMessage(EnumChatFormatting.GRAY.toString() + EnumChatFormatting.STRIKETHROUGH + "---------------------------------------");
+                            break;
                         }
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    return;
                 }
-                for (int i = 0; i < 4; i++) {
-                    if (i >= newestVersionNumbers.size()) {
-                        newestVersionNumbers.add(i, 0);
-                    }
-                    if (i >= thisVersionNumbers.size()) {
-                        thisVersionNumbers.add(i, 0);
-                    }
-                    if (newestVersionNumbers.get(i) > thisVersionNumbers.get(i)) {
-                        String link = "https://hypixel.net/threads/forge-1-8-9-skyblockaddons-useful-features-for-skyblock.2109217/";
-                        try {
-                            url = new URL("https://raw.githubusercontent.com/biscuut/SkyblockAddons/master/updatelink.txt");
-                            connection = url.openConnection();
-                            connection.setReadTimeout(5000);
-                            connection.addRequestProperty("User-Agent", "SkyblockAddons");
-                            connection.setDoOutput(true);
-                            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                            while ((currentLine = reader.readLine()) != null) {
-                                link = currentLine;
-                            }
-                            reader.close();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        } finally {
-                            sendMessage(EnumChatFormatting.GRAY.toString() + EnumChatFormatting.STRIKETHROUGH + "--------------" + EnumChatFormatting.GRAY + "[" + EnumChatFormatting.BLUE + EnumChatFormatting.BOLD + " SkyblockAddons " + EnumChatFormatting.GRAY + "]" + EnumChatFormatting.GRAY + EnumChatFormatting.STRIKETHROUGH + "--------------");
-                            ChatComponentText newVersion = new ChatComponentText(EnumChatFormatting.YELLOW+Message.MESSAGE_NEW_VERSION.getMessage(newestVersion)+"\n");
-                            newVersion.setChatStyle(newVersion.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link)));
-                            sendMessage(newVersion);
-                            ChatComponentText discord = new ChatComponentText(EnumChatFormatting.YELLOW+Message.MESSAGE_DISCORD.getMessage());
-                            discord.setChatStyle(discord.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/PqTAEek")));
-                            sendMessage(discord);
-                            sendMessage(EnumChatFormatting.GRAY.toString() + EnumChatFormatting.STRIKETHROUGH + "---------------------------------------");
-                        }
-                        break;
-                    } else if (thisVersionNumbers.get(i) > newestVersionNumbers.get(i)) {
-                        sendMessage(EnumChatFormatting.GRAY.toString() + EnumChatFormatting.STRIKETHROUGH + "--------------" + EnumChatFormatting.GRAY + "[" + EnumChatFormatting.BLUE + EnumChatFormatting.BOLD + " SkyblockAddons " + EnumChatFormatting.GRAY + "]" + EnumChatFormatting.GRAY + EnumChatFormatting.STRIKETHROUGH + "--------------");
-                        sendMessage(EnumChatFormatting.YELLOW + Message.MESSAGE_DEVELOPMENT_VERSION.getMessage(SkyblockAddons.VERSION, newestVersion));
-                        sendMessage(EnumChatFormatting.GRAY.toString() + EnumChatFormatting.STRIKETHROUGH + "---------------------------------------");
-                        break;
-                    }
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }).start();
-    }
+            }).start();
+        }*/
 
     public void checkDisabledFeatures() {
         new Thread(() -> {
@@ -267,7 +309,7 @@ public class Utils {
                 while ((currentLine = reader.readLine()) != null) {
                     String[] splitLine = currentLine.split(Pattern.quote("|"));
                     if (!currentLine.startsWith("all|")) {
-                        if (!SkyblockAddons.VERSION.equals(splitLine[0])) {
+                        if (!SkyblockAddon.VERSION.equals(splitLine[0])) {
                             continue;
                         }
                     }
@@ -320,18 +362,20 @@ public class Utils {
         return false;
     }
 
-    private final static String USER_AGENT = "SkyblockAddons/" + SkyblockAddons.VERSION;
+    private final static String USER_AGENT = "SkyblockAddons/" + SkyblockAddon.VERSION;
 
     public void fetchEstimateFromServer() {
         new Thread(() -> {
-            FMLLog.info("[SkyblockAddons] Getting magma boss spawn estimate from server...");
+
+            Hyperium.LOGGER.info("[SkyblockAddons] Getting magma boss spawn estimate from server...");
             try {
                 URL url = new URL("https://hypixel-api.inventivetalent.org/api/skyblock/bosstimer/magma/estimatedSpawn");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("User-Agent", USER_AGENT);
 
-                FMLLog.info("[SkyblockAddons] Got response code " + connection.getResponseCode());
+
+                Hyperium.LOGGER.info("[SkyblockAddons] Got response code " + connection.getResponseCode());
 
                 StringBuilder response = new StringBuilder();
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
@@ -344,13 +388,13 @@ public class Utils {
                 long estimate = responseJson.get("estimate").getAsLong();
                 long currentTime = System.currentTimeMillis();
                 int magmaSpawnTime = (int)((estimate-currentTime)/1000);
-                FMLLog.info("[SkyblockAddons] System time is " + currentTime +", server time estimate is " +
+                Hyperium.LOGGER.info("[SkyblockAddons] System time is " + currentTime +", server time estimate is " +
                     estimate+". Updating magma boss spawn to be in "+magmaSpawnTime+" seconds.");
 
                 main.getPlayerListener().setMagmaTime(magmaSpawnTime, true);
                 main.getPlayerListener().setMagmaAccuracy(EnumUtils.MagmaTimerAccuracy.ABOUT);
             } catch (IOException ex) {
-                FMLLog.warning("[SkyblockAddons] Failed to get magma boss spawn estimate from server");
+                Hyperium.LOGGER.warn("[SkyblockAddons] Failed to get magma boss spawn estimate from server");
                 ex.printStackTrace();
             }
         }).start();
@@ -358,7 +402,7 @@ public class Utils {
 
     public void sendPostRequest(EnumUtils.MagmaEvent event) {
         new Thread(() -> {
-            FMLLog.info("[SkyblockAddons] Posting event " + event.getInventiveTalentEvent() + " to InventiveTalent API");
+            Hyperium.LOGGER.info("[SkyblockAddons] Posting event " + event.getInventiveTalentEvent() + " to InventiveTalent API");
 
             try {
                 String urlString = "https://hypixel-api.inventivetalent.org/api/skyblock/bosstimer/magma/addEvent";
@@ -383,11 +427,11 @@ public class Utils {
                         out.writeBytes(postString);
                         out.flush();
                     }
-                    FMLLog.info("[SkyblockAddons] Got response code " + connection.getResponseCode());
+                    Hyperium.LOGGER.info("[SkyblockAddons] Got response code " + connection.getResponseCode());
                     connection.disconnect();
                 }
             } catch (IOException ex) {
-                FMLLog.warning("[SkyblockAddons] Failed to post event to server");
+                Hyperium.LOGGER.warn("[SkyblockAddons] Failed to post event to server");
                 ex.printStackTrace();
             }
         }).start();

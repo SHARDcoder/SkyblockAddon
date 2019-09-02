@@ -3,9 +3,13 @@ package me.shardcoder.skyblockaddon.mixins;
 import cc.hyperium.event.ItemTooltipEvent;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.BackpackInfo;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
 import me.shardcoder.skyblockaddon.utils.Feature;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.EnumFaceDirection.Constants;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -24,7 +28,7 @@ public abstract class MixinGuiScreen {
 
     @Inject(method = "renderToolTip", at = @At(value = "HEAD"), cancellable = true)
     private void shouldRenderRedirect(ItemStack stack, int x, int y, CallbackInfo ci) {
-        SkyblockAddons main = SkyblockAddons.getInstance();
+        SkyblockAddon main = SkyblockAddon.getInstance();
         if (stack.getItem().equals(Items.skull) && main.getConfigValues().isEnabled(Feature.SHOW_BACKPACK_PREVIEW)) {
             if (main.getConfigValues().isEnabled(Feature.SHOW_BACKPACK_HOLDING_SHIFT) && !GuiScreen.isShiftKeyDown()) {
                 return;
@@ -62,7 +66,7 @@ public abstract class MixinGuiScreen {
                         NBTTagCompound nbtTagCompound;
                         try {
                             nbtTagCompound = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
-                            NBTTagList list = nbtTagCompound.getTagList("i", Constants.NBT.TAG_COMPOUND);
+                            NBTTagList list = nbtTagCompound.getTagList("i", 10); //public static final int TAG_COMPOUND    = 10;
                             int length = list.tagCount();
                             ItemStack[] items = new ItemStack[length];
                             for (int i = 0; i < length; i++) {
@@ -84,7 +88,7 @@ public abstract class MixinGuiScreen {
                             }
                             main.getUtils().setBackpackToRender(new BackpackInfo(x, y, items, backpack));
                             main.getPlayerListener().onItemTooltip(new ItemTooltipEvent(stack,
-                                null, null, false));
+                                null));
                             ci.cancel();
                         } catch (IOException e) {
                             e.printStackTrace();

@@ -2,6 +2,7 @@ package me.shardcoder.skyblockaddon.gui.buttons;
 
 import java.math.BigDecimal;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.ConfigColor;
 import me.shardcoder.skyblockaddon.utils.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -46,9 +47,9 @@ public class ButtonSlider extends GuiButton {
         drawRect(this.xPosition, this.yPosition, this.xPosition+this.width, this.yPosition+this.height, main.getUtils().getDefaultColor(boxAlpha));
         this.mouseDragged(mc, mouseX, mouseY);
         int j = 14737632;
-        if (packedFGColour != 0) {
+        /*if (packedFGColour != 0) {
             j = packedFGColour;
-        } else if (!this.enabled) {
+        } else */if (!this.enabled) {
             j = 10526880;
         } else if (this.hovered) {
             j = 16777120;

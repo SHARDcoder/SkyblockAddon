@@ -16,13 +16,14 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class SkyblockAddonTweaker implements ITweaker {
     //hyperium one first
-    cc.hyperium.launch.HyperiumTweaker
+    //cc.hyperium.launch.HyperiumTweaker;
 
 
 
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
     }
+
 
     @SuppressWarnings({"JavaReflectionMemberAccess", "unchecked", "deprecation"})
     @Override

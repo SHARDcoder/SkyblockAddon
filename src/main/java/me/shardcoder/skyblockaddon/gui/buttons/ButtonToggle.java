@@ -1,9 +1,13 @@
 package me.shardcoder.skyblockaddon.gui.buttons;
 
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.gui.SkyblockAddonGui;
+import me.shardcoder.skyblockaddon.utils.ConfigColor;
 import me.shardcoder.skyblockaddon.utils.Feature;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+
+import java.awt.*;
 
 public class ButtonToggle extends ButtonFeature {
     private SkyblockAddon main;
@@ -57,7 +61,7 @@ public class ButtonToggle extends ButtonFeature {
             GlStateManager.enableBlend();
             float scale = 1;
             int stringWidth = mc.fontRendererObj.getStringWidth(displayString);
-            float widthLimit = BUTTON_MAX_WIDTH -10;
+            float widthLimit = SkyblockAddonGui.BUTTON_MAX_WIDTH -10;
             if (feature == Feature.WARNING_TIME) {
                 widthLimit = 90;
             }

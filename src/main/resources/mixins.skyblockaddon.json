@@ -4,6 +4,15 @@
   "package": "me.shardcoder.skyblockaddon.mixins",
   "verbose": true,
   "client": [
-
+    "MixinEntityPlayerSP",
+    "MixinSoundManager",
+    "MixinEntityRenderer",
+    "MixinRenderManager",
+    "MixinGuiContainer",
+    "MixinItem",
+    "MixinGuiScreen",
+    "MixinGuiChest",
+    "MixinPlayerControllerMP",
+    "MixinNetHandlerPlayClient"
   ]
 }

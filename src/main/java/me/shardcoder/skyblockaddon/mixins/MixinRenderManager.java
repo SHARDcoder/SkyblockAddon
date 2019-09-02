@@ -1,5 +1,22 @@
 package me.shardcoder.skyblockaddon.mixins;
 
+import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
+import me.shardcoder.skyblockaddon.utils.Feature;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.monster.EntityZombie;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 @Mixin(RenderManager.class)
 public class MixinRenderManager {
 
@@ -8,7 +25,7 @@ public class MixinRenderManager {
         double auctionX = 17.5;
         double auctionY = 71;
         double auctionZ = -78.5;
-        SkyblockAddons main = SkyblockAddons.getInstance();
+        SkyblockAddon main = SkyblockAddon.getInstance();
         if (entityIn instanceof EntityItem &&
             entityIn.ridingEntity instanceof EntityZombie && entityIn.ridingEntity.isInvisible()) { // Conditions for Skeleton Hat flying bones
             if (main.getConfigValues().isEnabled(Feature.HIDE_BONES)) {

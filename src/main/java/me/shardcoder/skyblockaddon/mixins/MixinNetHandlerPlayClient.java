@@ -1,5 +1,21 @@
 package me.shardcoder.skyblockaddon.mixins;
 
+import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.Feature;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.S2FPacketSetSlot;
+import net.minecraft.network.play.server.S30PacketWindowItems;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 @Mixin(NetHandlerPlayClient.class)
 public class MixinNetHandlerPlayClient {
 
@@ -12,7 +28,7 @@ public class MixinNetHandlerPlayClient {
             ItemStack item = packetIn.func_149174_e();
             int windowID = packetIn.func_149175_c();
             int slot = packetIn.func_149173_d();
-            SkyblockAddons main = SkyblockAddons.getInstance();
+            SkyblockAddon main = SkyblockAddon.getInstance();
             if (item != null && main != null && main.getUtils().isOnSkyblock() &&
                 main.getConfigValues().isEnabled(Feature.STOP_BOW_CHARGE_FROM_RESETTING) && windowID == 0) {
                 Minecraft mc = Minecraft.getMinecraft();
@@ -35,7 +51,7 @@ public class MixinNetHandlerPlayClient {
     private void handleSetSlot(S30PacketWindowItems packetIn, CallbackInfo ci) {
         if (packetIn != null) {
             ItemStack[] itemStacks = packetIn.getItemStacks();
-            SkyblockAddons main = SkyblockAddons.getInstance();
+            SkyblockAddon main = SkyblockAddon.getInstance();
             if (itemStacks != null && itemStacks.length == 45 && main != null &&
                 main.getConfigValues().isEnabled(Feature.STOP_BOW_CHARGE_FROM_RESETTING) && main.getUtils().isOnSkyblock()) {
                 Minecraft mc = Minecraft.getMinecraft();

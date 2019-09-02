@@ -2,6 +2,9 @@ package me.shardcoder.skyblockaddon.utils;
 
 import net.minecraft.util.EnumChatFormatting;
 
+import java.awt.*;
+
+
 public enum ConfigColor {
 
     BLACK(EnumChatFormatting.BLACK, 0,0,0),

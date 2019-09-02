@@ -1,5 +1,18 @@
 package me.shardcoder.skyblockaddon.utils;
 
+import java.util.Map;
+import java.util.Set;
+import me.shardcoder.skyblockaddon.SkyblockAddon;
+import net.minecraft.client.Minecraft;
+
+import java.util.*;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+
+import static me.shardcoder.skyblockaddon.utils.Feature.*;
+
+
 public class InventoryUtils {
 
     /**
@@ -17,9 +30,9 @@ public class InventoryUtils {
     private boolean inventoryIsFull;
     private boolean wearingSkeletonHelmet;
 
-    private SkyblockAddons main;
+    private SkyblockAddon main;
 
-    public InventoryUtils(SkyblockAddons main) {
+    public InventoryUtils(SkyblockAddon main) {
         this.main = main;
     }
 
@@ -147,7 +160,7 @@ public class InventoryUtils {
                 inventoryIsFull = true;
                 if (mc.currentScreen == null && main.getPlayerListener().didntRecentlyJoinWorld()) {
                     main.getUtils().playSound("random.orb", 0.5);
-                    main.getRenderListener().setTitleFeature(Feature.FULL_INVENTORY_WARNING);
+                    main.getRenderListener().setTitleFeature(FULL_INVENTORY_WARNING);
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {

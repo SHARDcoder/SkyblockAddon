@@ -1,10 +1,13 @@
 package me.shardcoder.skyblockaddon.gui.buttons;
 
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.ConfigColor;
 import me.shardcoder.skyblockaddon.utils.Feature;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.renderer.GlStateManager;
+
+import java.awt.*;
 
 public class ButtonModify extends ButtonText {
     private SkyblockAddon main;

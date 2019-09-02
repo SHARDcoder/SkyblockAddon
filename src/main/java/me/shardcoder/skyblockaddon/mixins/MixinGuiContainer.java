@@ -1,6 +1,12 @@
 package me.shardcoder.skyblockaddon.mixins;
 
+import java.util.Iterator;
+import java.util.Set;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.BackpackInfo;
+import me.shardcoder.skyblockaddon.utils.ConfigColor;
+import me.shardcoder.skyblockaddon.utils.EnchantPair;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
 import me.shardcoder.skyblockaddon.utils.Feature;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

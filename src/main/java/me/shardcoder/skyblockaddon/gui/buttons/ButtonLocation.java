@@ -2,8 +2,11 @@ package me.shardcoder.skyblockaddon.gui.buttons;
 
 import cc.hyperium.utils.ChatColor;
 import java.util.ArrayList;
+import java.util.List;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.ConfigColor;
 import me.shardcoder.skyblockaddon.utils.Feature;
+import me.shardcoder.skyblockaddon.utils.ItemDiff;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 

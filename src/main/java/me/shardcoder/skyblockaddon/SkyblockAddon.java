@@ -6,10 +6,16 @@ import cc.hyperium.event.InitializationEvent;
 import cc.hyperium.event.InvokeEvent;
 import cc.hyperium.event.PreInitializationEvent;
 import cc.hyperium.internal.addons.IAddon;
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 import me.shardcoder.skyblockaddon.commands.SkyblockAddonCommand;
 import me.shardcoder.skyblockaddon.listeners.PlayerListener;
+import me.shardcoder.skyblockaddon.listeners.RenderListener;
+import me.shardcoder.skyblockaddon.utils.ConfigValues;
+import me.shardcoder.skyblockaddon.utils.InventoryUtils;
+import me.shardcoder.skyblockaddon.utils.Scheduler;
+import me.shardcoder.skyblockaddon.utils.Utils;
 import net.minecraft.client.Minecraft;
 
 public class SkyblockAddon implements IAddon {
@@ -21,6 +27,8 @@ public class SkyblockAddon implements IAddon {
         System.out.println("[SkyblockAddon] Loaded");
     }
 
+    public static final String VERSION = "1.0.0";
+
     private static SkyblockAddon instance; // for Mixins cause they don't have a constructor
     private ConfigValues configValues;
     private PlayerListener playerListener = new PlayerListener(this);
@@ -31,10 +39,19 @@ public class SkyblockAddon implements IAddon {
     private final boolean usingLabymod = false;
     private final boolean usingOofModv1 = false;
 
+
+
+    //cfg
+    /**
+     * The Hyperium configuration folder
+     */
+    private final File folder = new File("hyperium");
+
     @InvokeEvent
     public void preInit(PreInitializationEvent e) {
         instance = this;
-        configValues = new ConfigValues(this, e.getSuggestedConfigurationFile());
+        //need to change this to be hyperium config type
+        configValues = new ConfigValues(this, new File(folder, "SkyblockAddon.json"));
     }
 
     @InvokeEvent

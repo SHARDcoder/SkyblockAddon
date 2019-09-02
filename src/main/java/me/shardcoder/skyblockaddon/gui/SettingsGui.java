@@ -2,7 +2,6 @@ package me.shardcoder.skyblockaddon.gui;
 
 import static me.shardcoder.skyblockaddon.gui.SkyblockAddonGui.BUTTON_MAX_WIDTH;
 
-import com.chattriggers.ctjs.minecraft.wrappers.Player;
 import java.math.BigDecimal;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
 import me.shardcoder.skyblockaddon.gui.buttons.ButtonColor;
@@ -12,12 +11,15 @@ import me.shardcoder.skyblockaddon.gui.buttons.ButtonSlider;
 import me.shardcoder.skyblockaddon.gui.buttons.ButtonSolid;
 import me.shardcoder.skyblockaddon.gui.buttons.ButtonToggle;
 import me.shardcoder.skyblockaddon.listeners.PlayerListener;
+import me.shardcoder.skyblockaddon.utils.EnumUtils;
 import me.shardcoder.skyblockaddon.utils.Feature;
 import me.shardcoder.skyblockaddon.utils.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+
+import java.awt.*;
 
 public class SettingsGui extends GuiScreen {
     private SkyblockAddon main;

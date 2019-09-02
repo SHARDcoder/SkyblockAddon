@@ -1,5 +1,23 @@
 package me.shardcoder.skyblockaddon.mixins;
 
+import me.shardcoder.skyblockaddon.SkyblockAddon;
+import me.shardcoder.skyblockaddon.utils.Feature;
+import me.shardcoder.skyblockaddon.utils.Message;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.EnumFacing;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
 @Mixin(PlayerControllerMP.class)
 public class MixinPlayerControllerMP {
 
@@ -10,7 +28,7 @@ public class MixinPlayerControllerMP {
      */
     @Inject(method = "clickBlock", at = @At(value = "HEAD"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
     private void onPlayerDamageBlock(BlockPos loc, EnumFacing face, CallbackInfoReturnable<Boolean> cir) {
-        SkyblockAddons main = SkyblockAddons.getInstance();
+        SkyblockAddon main = SkyblockAddon.getInstance();
         if (main.getConfigValues().isEnabled(Feature.AVOID_BREAKING_STEMS)) {
             Minecraft mc = Minecraft.getMinecraft();
             EntityPlayerSP p = mc.thePlayer;
@@ -20,7 +38,7 @@ public class MixinPlayerControllerMP {
                 cir.setReturnValue(false);
                 if (System.currentTimeMillis()-lastMessage > 15000) {
                     lastMessage = System.currentTimeMillis();
-                    main.getUtils().sendMessage(EnumChatFormatting.RED+Message.MESSAGE_CANCELLED_STEM_BREAK.getMessage());
+                    main.getUtils().sendMessage(EnumChatFormatting.RED+ Message.MESSAGE_CANCELLED_STEM_BREAK.getMessage());
                 }
             }
         }

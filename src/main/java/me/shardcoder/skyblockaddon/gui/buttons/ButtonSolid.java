@@ -8,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.renderer.GlStateManager;
 
+import java.awt.*;
+
 public class ButtonSolid extends ButtonText {
     private SkyblockAddon main;
 
@@ -64,7 +66,7 @@ public class ButtonSolid extends ButtonText {
         String originalString = displayString;
         float scale = 1;
         int stringWidth = mc.fontRendererObj.getStringWidth(displayString);
-        float widthLimit = BUTTON_MAX_WIDTH -10;
+        float widthLimit = SkyblockAddonGui.BUTTON_MAX_WIDTH -10;
         if (feature == Feature.WARNING_TIME) {
             widthLimit = 90;
         }
