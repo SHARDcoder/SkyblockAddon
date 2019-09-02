@@ -1,7 +1,6 @@
 package me.shardcoder.skyblockaddon.listeners;
 
 import cc.hyperium.event.InvokeEvent;
-import cc.hyperium.event.RenderGuiEvent;
 import cc.hyperium.event.TickEvent;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
 import me.shardcoder.skyblockaddon.gui.LocationEditGui;
@@ -16,7 +15,6 @@ import me.shardcoder.skyblockaddon.utils.ItemDiff;
 import me.shardcoder.skyblockaddon.utils.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;

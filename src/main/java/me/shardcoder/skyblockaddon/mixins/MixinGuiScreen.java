@@ -9,7 +9,6 @@ import me.shardcoder.skyblockaddon.utils.EnumUtils;
 import me.shardcoder.skyblockaddon.utils.Feature;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.EnumFaceDirection.Constants;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;

@@ -1,7 +1,6 @@
 package me.shardcoder.skyblockaddon.listeners;
 
 import cc.hyperium.Hyperium;
-import cc.hyperium.event.ChatEvent;
 import cc.hyperium.event.EntityRenderEvent;
 import cc.hyperium.event.InvokeEvent;
 import cc.hyperium.event.ItemTooltipEvent;
@@ -9,7 +8,6 @@ import cc.hyperium.event.Priority;
 import cc.hyperium.event.ServerChatEvent;
 import cc.hyperium.event.TickEvent;
 import cc.hyperium.event.WorldChangeEvent;
-import cc.hyperium.event.WorldLoadEvent;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
 import me.shardcoder.skyblockaddon.utils.Attribute;
 import me.shardcoder.skyblockaddon.utils.CoordsPair;
@@ -21,15 +19,12 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 

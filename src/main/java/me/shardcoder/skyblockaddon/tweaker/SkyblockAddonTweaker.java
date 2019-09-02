@@ -8,16 +8,11 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.CodeSource;
 import java.util.List;
 
 @SuppressWarnings("unused")
 public class SkyblockAddonTweaker implements ITweaker {
-    //hyperium one first
-    //cc.hyperium.launch.HyperiumTweaker;
-
 
 
     @Override
@@ -45,6 +40,9 @@ public class SkyblockAddonTweaker implements ITweaker {
         // Taken from Resource-Exploit-Fix by Sk1er
         CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
 
+
+        //were not a mod anymore
+        /*
         try {
             Class<?> aClass = Class.forName("net.minecraftforge.fml.relauncher.CoreModManager");
             Method getIgnoredMods = null;
@@ -89,7 +87,7 @@ public class SkyblockAddonTweaker implements ITweaker {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
+        */
     }
 
     @Override

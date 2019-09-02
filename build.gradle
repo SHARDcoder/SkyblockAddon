@@ -54,5 +54,5 @@ jar {
 }
 
 dependencies {
-    compile 'com.github.asbyth:Hyperium:ce8b1a6'
+    compile 'com.github.hyperiumclient:Hyperium:ab4bf49'
 }
