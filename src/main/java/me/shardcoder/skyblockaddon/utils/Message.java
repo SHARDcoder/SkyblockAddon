@@ -158,9 +158,10 @@ public enum Message {
 //                    text = text.replace("%anchor%", main.getConfigValues().getAnchorPoint(lastHovered).getMessage());
 //                }
             }
-            if (text != null && main.getConfigValues().getLanguage() == Language.HEBREW) {
-                text = main.getUtils().reverseText(text);
-            }
+            //TODO - dont have hebrew yet
+            //if (text != null && main.getConfigValues().getLanguage() == Language.HEBREW) {
+            //    text = main.getUtils().reverseText(text);
+            //}
         } catch (NullPointerException ex) { // In case I messed up some translation or something.
             ex.printStackTrace();
             text = "";

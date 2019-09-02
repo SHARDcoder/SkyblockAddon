@@ -1,8 +1,5 @@
 package me.shardcoder.skyblockaddon.gui;
 
-import cc.hyperium.gui.GuiHyperiumScreenIngameMenu;
-import cc.hyperium.gui.GuiIngameMultiplayer;
-import cc.hyperium.mixinsimp.gui.HyperiumGuiIngame;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
 import me.shardcoder.skyblockaddon.gui.buttons.ButtonFeature;
 import me.shardcoder.skyblockaddon.gui.buttons.ButtonSolid;

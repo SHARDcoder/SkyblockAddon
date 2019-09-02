@@ -3,8 +3,6 @@ package me.shardcoder.skyblockaddon.utils;
 import cc.hyperium.Hyperium;
 import cc.hyperium.event.ChatEvent;
 import cc.hyperium.event.EventBus;
-import cc.hyperium.gui.main.HyperiumOverlay;
-import com.android.dx.rop.cst.CstArray;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -38,6 +36,7 @@ import net.minecraft.util.MathHelper;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.awt.*;
+import java.util.stream.*;
 
 public class Utils {
 
@@ -97,8 +96,8 @@ public class Utils {
             if (sidebarObjective != null) {
                 onSkyblock = stripColor(sidebarObjective.getDisplayName()).startsWith("SKYBLOCK");
                 Collection<Score> collection = scoreboard.getSortedScores(sidebarObjective);
-                List<Score> list = new ArrayList<Object>(collection.stream().filter(p_apply_1_ -> p_apply_1_.getPlayerName() != null && !p_apply_1_.getPlayerName().startsWith("#")).collect(
-                    null));
+                List<Score> list = Lists.newArrayList(collection.stream().filter(p_apply_1_ -> p_apply_1_.getPlayerName() != null && !p_apply_1_.getPlayerName()
+                    .startsWith("#")).collect(Collectors.toList()));
                 if (list.size() > 15) {
                     collection = Lists.newArrayList(Iterables.skip(list, collection.size() - 15));
                 } else {

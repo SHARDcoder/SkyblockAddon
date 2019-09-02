@@ -126,7 +126,7 @@ public class PlayerListener {
                         main.getRenderListener().setPredictHealth(true);
                         returnMessage = messageSplit[0];
                     } else {
-                        // Example Action Bar: '§c586/586❤     §a247§a❈ Defense     §b173/173✎ Mana§r'
+                        // Example Action Bar: '§c586/586 (heart)     §a247§a (cross thing) Defense     §b173/173✎ Mana§r'
                         String[] splitMessage = message.split(" {5}");
                         String healthPart = splitMessage[0];
                         String defencePart = null;
