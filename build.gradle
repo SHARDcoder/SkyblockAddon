@@ -31,7 +31,6 @@ targetCompatibility = 1.8
 minecraft {
     version = "1.8.9"
     tweakClass = "cc.hyperium.launch.HyperiumTweaker"
-    tweakClass = "me.shardcoder.skyblockaddon.tweaker.SkyblockAddonTweaker"
     mappings = "stable_20"
     runDir = 'run'
     makeObfSourceJar = true

@@ -463,7 +463,7 @@ public class Utils {
     }
 
     public boolean isDevEnviroment() {
-        return (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+        return (boolean) Hyperium.INSTANCE.isDevEnv();
     }
 
     public int getDefaultBlue(int alpha) {
