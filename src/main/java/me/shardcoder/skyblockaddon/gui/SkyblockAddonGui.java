@@ -141,8 +141,8 @@ public class SkyblockAddonGui extends GuiScreen {
         int defaultBlue = main.getUtils().getDefaultBlue(alpha*2);
 
         // The text at the top of the GUI
-        drawScaledString("SkyblockAddons", 0.12, defaultBlue, 2.5F);
-        drawScaledString("v" + SkyblockAddon.VERSION + " by Biscut", 0.12, defaultBlue, 1.3, 50, 17);
+        drawScaledString("SkyblockAddon", 0.12, defaultBlue, 2.5F);
+        drawScaledString("v" + SkyblockAddon.VERSION + " by Biscut, ported by SHARDcoder", 0.12, defaultBlue, 1.3, 50, 17);
         drawScaledString(Message.SETTING_SETTINGS.getMessage(), 0.8, defaultBlue, 1.5);
         if (page == 1) {
             if (main.isUsingLabymod() || main.getUtils().isDevEnviroment()) { // Show the labymod message also when i'm testing it to make sure it looks fine.

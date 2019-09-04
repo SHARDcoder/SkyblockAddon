@@ -9,7 +9,6 @@
     "MixinEntityRenderer",
     "MixinRenderManager",
     "MixinGuiContainer",
-    "MixinItem",
     "MixinGuiScreen",
     "MixinGuiChest",
     "MixinPlayerControllerMP",
