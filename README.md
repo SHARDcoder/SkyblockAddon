@@ -7,7 +7,7 @@ double press drop
 
 Some magma boss detection so might be a bit less accurate
 
-	working on rewriting this bit because there's an api
+-working on rewriting this bit because there's an api
 
 hiding health armor and food bars because its a forge thing
 
