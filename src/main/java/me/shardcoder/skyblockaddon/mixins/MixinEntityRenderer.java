@@ -2,7 +2,7 @@ package me.shardcoder.skyblockaddon.mixins;
 
 import cc.hyperium.event.RenderWorldEvent;
 import cc.hyperium.handlers.handlers.reach.ReachDisplay;
-import cc.hyperium.mixinsimp.entity.HyperiumEntityRenderer;
+import cc.hyperium.mixinsimp.client.renderer.HyperiumEntityRenderer;
 import com.google.common.base.Predicates;
 import java.util.List;
 import me.shardcoder.skyblockaddon.SkyblockAddon;
@@ -29,39 +29,26 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+
 @Mixin(value = EntityRenderer.class, priority = 9001)
-
-
-
 public class MixinEntityRenderer {
     //hyperium shid because priority
-    @Shadow
-    private float thirdPersonDistance;
-    @Shadow
-    private float thirdPersonDistanceTemp;
-    @Shadow
-    private boolean cloudFog;
-    @Shadow
-    private Minecraft mc;
-    @Shadow
-    private Entity pointedEntity;
+    @Shadow private float thirdPersonDistance;
+    @Shadow private float thirdPersonDistanceTemp;
+    @Shadow private boolean cloudFog;
+    @Shadow private Minecraft mc;
+    @Shadow private Entity pointedEntity;
+
     private HyperiumEntityRenderer hyperiumEntityRenderer = new HyperiumEntityRenderer((EntityRenderer) (Object) this);
-    @Shadow
-    @Final
-    public static int shaderCount;
 
-    @Shadow
-    private int shaderIndex;
-
-    //endStartSection
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void updateCameraAndRender(float partialTicks, long nano, CallbackInfo ci) {
         hyperiumEntityRenderer.updateCameraAndRender();
     }
 
-    @Inject(method = "activateNextShader", at = @At("INVOKE_ASSIGN"))
-    public void activateNextShader(CallbackInfo callbackInfo) {
-        HyperiumEntityRenderer.INSTANCE.isUsingShader = this.shaderIndex != shaderCount;
+    @Inject(method = "activateNextShader", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/renderer/EntityRenderer;loadShader(Lnet/minecraft/util/ResourceLocation;)V"))
+    private void activateNextShader(CallbackInfo callbackInfo) {
+        HyperiumEntityRenderer.INSTANCE.isUsingShader = true;
     }
 
     /**
@@ -70,7 +57,7 @@ public class MixinEntityRenderer {
      */
     @Overwrite
     private void orientCamera(float partialTicks) {
-        hyperiumEntityRenderer.orientCamera(partialTicks, this.thirdPersonDistanceTemp, this.thirdPersonDistance, this.cloudFog, this.mc);
+        hyperiumEntityRenderer.orientCamera(partialTicks, this.thirdPersonDistanceTemp, this.thirdPersonDistance, this.mc);
     }
 
     @Inject(method = "renderWorldPass", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=hand"))
@@ -79,7 +66,7 @@ public class MixinEntityRenderer {
     }
 
     @Inject(method = "renderWorldPass", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=outline"), cancellable = true)
-    public void drawOutline(int pass, float part, long nano, CallbackInfo info) {
+    private void drawOutline(int pass, float part, long nano, CallbackInfo info) {
         hyperiumEntityRenderer.drawOutline(part, this.mc);
     }
 
@@ -99,7 +86,7 @@ public class MixinEntityRenderer {
             if (this.mc.theWorld != null) {
                 this.mc.mcProfiler.startSection("pick");
                 this.mc.pointedEntity = null;
-                double d0 = (double) this.mc.playerController.getBlockReachDistance();
+                double d0 = this.mc.playerController.getBlockReachDistance();
                 this.mc.objectMouseOver = entity.rayTrace(d0, partialTicks);
                 double d1 = d0;
                 Vec3 vec3 = entity.getPositionEyes(partialTicks);
@@ -123,14 +110,12 @@ public class MixinEntityRenderer {
                 this.pointedEntity = null;
                 Vec3 vec33 = null;
                 float f = 1.0F;
-                List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0).expand((double) f, (double) f, (double) f), Predicates
-                    .and(EntitySelectors.NOT_SPECTATING, Entity::canBeCollidedWith));
+                List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0).expand(f, f, f), Predicates.and(EntitySelectors.NOT_SPECTATING, Entity::canBeCollidedWith));
                 double d2 = d1;
 
-                for (int j = 0; j < list.size(); ++j) {
-                    Entity entity1 = list.get(j);
+                for (Entity entity1 : list) {
                     float f1 = entity1.getCollisionBorderSize();
-                    AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double) f1, (double) f1, (double) f1);
+                    AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand(f1, f1, f1);
                     MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
 
                     if (axisalignedbb.isVecInside(vec3)) {

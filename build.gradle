@@ -31,7 +31,7 @@ targetCompatibility = 1.8
 minecraft {
     version = "1.8.9"
     tweakClass = "cc.hyperium.launch.HyperiumTweaker"
-    mappings = "stable_20"
+    mappings = "stable_22"
     runDir = 'run'
     makeObfSourceJar = true
 }
@@ -53,5 +53,5 @@ jar {
 }
 
 dependencies {
-    compile 'com.github.hyperiumclient:Hyperium:ab4bf49'
+    compile 'com.github.hyperiumclient:Hyperium:f3ec37c'
 }
