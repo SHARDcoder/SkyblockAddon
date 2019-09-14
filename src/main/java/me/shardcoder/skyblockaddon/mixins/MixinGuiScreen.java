@@ -70,7 +70,9 @@ public abstract class MixinGuiScreen {
                             ItemStack[] items = new ItemStack[length];
                             for (int i = 0; i < length; i++) {
                                 NBTTagCompound item = list.getCompoundTagAt(i);
+                                // Pretty sure this is fixed. Seems to be in the auction house sooo......
                                 // This fixes an issue in Hypixel where enchanted potatoes have the wrong id (potato block instead of item).
+                                /*
                                 short itemID = item.getShort("id");
                                 if (itemID == 142 && item.hasKey("tag")) {
                                     extraAttributes = item.getCompoundTag("tag");
@@ -82,6 +84,7 @@ public abstract class MixinGuiScreen {
                                         }
                                     }
                                 }
+                                */
                                 ItemStack itemStack = ItemStack.loadItemStackFromNBT(item);
                                 items[i] = itemStack;
                             }

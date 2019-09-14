@@ -34,6 +34,8 @@ nbt copier
 
 
 
-## """""Bugs"""""
+## """""Bugs""""" / Stuff that causes crashes
 
 chat is spammed with blank lines
+
+hovering over a backpack with the configOpt enabled
